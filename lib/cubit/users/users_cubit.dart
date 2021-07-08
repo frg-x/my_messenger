@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:my_messenger/data/chat_repository.dart';
+import 'package:my_messenger/data/users_repository.dart';
 import 'package:my_messenger/models/user_profile.dart';
 
 part 'users_state.dart';
@@ -8,7 +8,7 @@ part 'users_state.dart';
 class UsersCubit extends Cubit<UsersState> {
   UsersCubit(this.users) : super(UsersInitial());
 
-  var fireStore = ChatRepository();
+  var fireStore = UsersRepository();
 
   List<UserProfile> users;
 

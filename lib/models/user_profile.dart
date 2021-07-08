@@ -16,7 +16,6 @@ class UserProfile {
     required this.maritalStatus,
     required this.preferLanguage,
     required this.avatarUrl,
-    required this.channels,
   });
 
   String id;
@@ -29,7 +28,6 @@ class UserProfile {
   String maritalStatus;
   String preferLanguage;
   String avatarUrl;
-  List<dynamic> channels;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
         id: json["id"],
@@ -42,7 +40,6 @@ class UserProfile {
         maritalStatus: json["maritalStatus"],
         preferLanguage: json["preferLanguage"],
         avatarUrl: json["avatarUrl"],
-        channels: json["channels"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -56,6 +53,5 @@ class UserProfile {
         "maritalStatus": maritalStatus,
         "preferLanguage": preferLanguage,
         "avatarUrl": avatarUrl,
-        "channels": channels,
       };
 }

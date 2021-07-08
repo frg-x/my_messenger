@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:my_messenger/data/chat_repository.dart';
+import 'package:my_messenger/data/users_repository.dart';
 import 'package:my_messenger/models/user_profile.dart';
 
 part 'sign_in_state.dart';
@@ -12,7 +12,7 @@ class SignInCubit extends Cubit<SignInState> {
   late User? user;
   final auth = FirebaseAuth.instance;
   bool isLogged = false;
-  var firebase = ChatRepository();
+  var firebase = UsersRepository();
   UserProfile userProfile = UserProfile(
     id: '',
     firstName: '',
@@ -24,7 +24,6 @@ class SignInCubit extends Cubit<SignInState> {
     maritalStatus: '',
     preferLanguage: '',
     avatarUrl: '',
-    channels: [],
   );
 
   String avatarUrl = '';
@@ -56,8 +55,8 @@ class SignInCubit extends Cubit<SignInState> {
 
   void signInWithEmailAndPassword(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       user = userCredential.user!;
       emit(SignedIn());
     } on FirebaseAuthException catch (e) {
@@ -99,9 +98,6 @@ class SignInCubit extends Cubit<SignInState> {
   }
 
   void logOut() {
-    firebase.logOut();
-    emit(LoggedOut(''));
-
     user = null;
     isLogged = false;
     userProfile = UserProfile(
@@ -115,9 +111,10 @@ class SignInCubit extends Cubit<SignInState> {
       maritalStatus: '',
       preferLanguage: '',
       avatarUrl: '',
-      channels: [],
     );
     avatarUrl = '';
     email = '';
+    emit(LoggedOut(''));
+    firebase.logOut();
   }
 }

@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.my_messenger">
    <application
-        android:label="my_messenger"
-        android:icon="@mipmap/ic_launcher"
+       android:label="My Messenger"
+       android:icon="@mipmap/ic_launcher"
        android:requestLegacyExternalStorage="true">
 
         <activity

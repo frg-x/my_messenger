@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_messenger/constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_messenger/cubit/sign_in/sign_in_cubit.dart';
 import 'package:my_messenger/models/user_profile.dart';
 import 'package:my_messenger/screens/users/users_screen.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -36,7 +36,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late File imageFile = File('');
   String avatarUrl = '';
   String email = '';
-  List<String> channels = [];
 
   @override
   void dispose() {
@@ -61,20 +60,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future<void> uploadFile(String filePath, String userId) async {
+  Future<void> uploadImage(String filePath, String userId) async {
     File file = File(filePath);
     try {
-      await FirebaseStorage.instance
-          .ref()
-          .child('users/avatar_$userId.png')
-          .putFile(file);
+      await FirebaseStorage.instance.ref().child('users/avatar_$userId.png').putFile(file);
 
-      FirebaseStorage.instance
-          .ref('users/avatar_$userId.png')
-          .getDownloadURL()
-          .then((value) {
+      FirebaseStorage.instance.ref('users/avatar_$userId.png').getDownloadURL().then((value) {
         setState(() {
           avatarUrl = value;
+          print(avatarUrl);
         });
       });
     } on FirebaseException catch (e) {
@@ -118,11 +112,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           });
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                           decoration: BoxDecoration(
-                              color: Color(0xFFEEEEEE),
-                              borderRadius: BorderRadius.circular(100)),
+                              color: Color(0xFFEEEEEE), borderRadius: BorderRadius.circular(100)),
                           child: Text(
                             'Quit',
                             style: AllStyles.font15w500darkGray,
@@ -146,25 +138,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             maritalStatus: maritalStatusController.text,
                             preferLanguage: preferLangController.text,
                             avatarUrl: avatarUrl,
-                            channels: channels,
                           );
-                          context
-                              .read<SignInCubit>()
-                              .updateCurrentUserInfo(newUserInfo);
+                          context.read<SignInCubit>().updateCurrentUserInfo(newUserInfo);
                           context.read<SignInCubit>().avatarUrl = avatarUrl;
                           context.read<SignInCubit>().email = email;
                           setState(() {
                             isSaveVisible = true;
                           });
-                          Navigator.popAndPushNamed(
-                              context, UsersScreen.routeName);
+                          Navigator.popAndPushNamed(context, UsersScreen.routeName);
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                           decoration: BoxDecoration(
-                              color: Color(0xFF7F48FB),
-                              borderRadius: BorderRadius.circular(100)),
+                              color: Color(0xFF7F48FB), borderRadius: BorderRadius.circular(100)),
                           child: Text(
                             'Save',
                             style: AllStyles.font15w500white,
@@ -183,79 +169,80 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void imagePickerBottomSheet(UserProfile userInfo) {
     showModalBottomSheet(
-        context: context,
-        barrierColor: Colors.black.withOpacity(0.8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(20.0),
-          ),
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
         ),
-        builder: (BuildContext context) {
-          return Container(
-            height: 166,
-            padding: EdgeInsets.only(top: 8, left: 24, right: 24),
-            child: Column(
-              children: [
-                modalSheetDivider(),
-                const SizedBox(height: 24.0),
-                GestureDetector(
-                  onTap: () async {
-                    PickedFile? pickedFile = await ImagePicker().getImage(
-                      source: ImageSource.camera,
-                      maxWidth: 400,
-                      maxHeight: 400,
-                    );
-                    if (pickedFile != null) {
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          height: 166,
+          padding: EdgeInsets.only(top: 8, left: 24, right: 24),
+          child: Column(
+            children: [
+              modalSheetDivider(),
+              const SizedBox(height: 24.0),
+              GestureDetector(
+                onTap: () async {
+                  PickedFile? pickedFile = await ImagePicker().getImage(
+                    source: ImageSource.camera,
+                    maxWidth: 400,
+                    maxHeight: 400,
+                  );
+                  if (pickedFile != null) {
+                    Navigator.pop(context);
+                    uploadImage(pickedFile.path, userInfo.id);
+                  }
+                },
+                child: Row(
+                  children: [
+                    SvgPicture.asset('assets/icons/camera.svg'),
+                    const SizedBox(width: 18),
+                    Text(
+                      'Take a Photo',
+                      style: AllStyles.font15w500darkGray,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              GestureDetector(
+                onTap: () async {
+                  PickedFile? pickedFile = await ImagePicker().getImage(
+                    source: ImageSource.gallery,
+                    maxWidth: 400,
+                    maxHeight: 400,
+                    preferredCameraDevice: CameraDevice.front,
+                  );
+                  if (pickedFile != null) {
+                    try {
                       Navigator.pop(context);
-                      uploadFile(pickedFile.path, userInfo.id);
+                      uploadImage(pickedFile.path, userInfo.id);
+                    } on FirebaseException catch (e) {
+                      // e.g, e.code == 'canceled'
+                      print(e);
                     }
-                  },
-                  child: Row(
-                    children: [
-                      SvgPicture.asset('assets/icons/camera.svg'),
-                      const SizedBox(width: 18),
-                      Text(
-                        'Take a Photo',
-                        style: AllStyles.font15w500darkGray,
-                      ),
-                    ],
-                  ),
+                  }
+                },
+                child: Row(
+                  children: [
+                    SvgPicture.asset('assets/icons/library.svg'),
+                    const SizedBox(width: 18),
+                    Text(
+                      'Choose from Library',
+                      style: AllStyles.font15w500darkGray,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 32),
-                GestureDetector(
-                  onTap: () async {
-                    PickedFile? pickedFile = await ImagePicker().getImage(
-                      source: ImageSource.gallery,
-                      maxWidth: 400,
-                      maxHeight: 400,
-                      preferredCameraDevice: CameraDevice.front,
-                    );
-                    if (pickedFile != null) {
-                      try {
-                        Navigator.pop(context);
-                        uploadFile(pickedFile.path, userInfo.id);
-                      } on FirebaseException catch (e) {
-                        // e.g, e.code == 'canceled'
-                        print(e);
-                      }
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      SvgPicture.asset('assets/icons/library.svg'),
-                      const SizedBox(width: 18),
-                      Text(
-                        'Choose from Library',
-                        style: AllStyles.font15w500darkGray,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> validateAndSave() async {
@@ -273,21 +260,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     UserProfile userInfo = context.read<SignInCubit>().userProfile;
 
-    //if (isFirstBuild) {
-    fNameController.text = userInfo.firstName;
-    lNameController.text = userInfo.lastName;
-    phoneController.text = userInfo.phone;
-    addressController.text = userInfo.address;
-    genderController.text = userInfo.gender;
-    maritalStatusController.text = userInfo.maritalStatus;
-    preferLangController.text = userInfo.preferLanguage;
-    avatarUrl = userInfo.avatarUrl;
-    email = userInfo.email;
-    //isFirstBuild = false;
-    //}
+    if (isFirstBuild) {
+      fNameController.text = userInfo.firstName;
+      lNameController.text = userInfo.lastName;
+      phoneController.text = userInfo.phone;
+      addressController.text = userInfo.address;
+      genderController.text = userInfo.gender;
+      maritalStatusController.text = userInfo.maritalStatus;
+      preferLangController.text = userInfo.preferLanguage;
+      avatarUrl = userInfo.avatarUrl;
+      email = userInfo.email;
+      isFirstBuild = false;
+    }
     return Scaffold(
-      appBar: ProfileAppBar(
-          validate: validateAndSave, isSaveVisible: isSaveVisible),
+      appBar: ProfileAppBar(validate: validateAndSave, isSaveVisible: isSaveVisible),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -318,8 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               borderRadius: BorderRadius.circular(36),
                             ),
                             child: Container(
-                              child:
-                                  SvgPicture.asset('assets/icons/camera.svg'),
+                              child: SvgPicture.asset('assets/icons/camera.svg'),
                               width: 24,
                               height: 24,
                             ),
@@ -388,8 +373,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             cursorRadius: Radius.circular(2.0),
                             style: AllStyles.font15w500darkGray,
                             cursorColor: AllColors.darkGray,
-                            decoration: AllStyles.myProfileInputDecoration
-                                .copyWith(hintText: 'Phone'),
+                            decoration:
+                                AllStyles.myProfileInputDecoration.copyWith(hintText: 'Phone'),
                             validator: (v) {
                               if (v!.isNotEmpty) {
                                 return null;
@@ -406,8 +391,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: addressController,
                             style: AllStyles.font15w500darkGray,
                             cursorColor: AllColors.darkGray,
-                            decoration: AllStyles.myProfileInputDecoration
-                                .copyWith(hintText: 'Address'),
+                            decoration:
+                                AllStyles.myProfileInputDecoration.copyWith(hintText: 'Address'),
                             validator: (v) {
                               if (v!.isNotEmpty) {
                                 return null;
@@ -424,8 +409,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: genderController,
                             style: AllStyles.font15w500darkGray,
                             cursorColor: AllColors.darkGray,
-                            decoration: AllStyles.myProfileInputDecoration
-                                .copyWith(hintText: 'Gender'),
+                            decoration:
+                                AllStyles.myProfileInputDecoration.copyWith(hintText: 'Gender'),
                             validator: (v) {
                               if (v!.isNotEmpty) {
                                 return null;

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_messenger/cubit/sign_in/sign_in_cubit.dart';
 import 'package:my_messenger/cubit/users/users_cubit.dart';
 import 'package:my_messenger/models/user_profile.dart';
+import 'package:my_messenger/screens/chat/chat_screen.dart';
 import 'package:my_messenger/screens/profile/profile_screen.dart';
 
 class UsersScreen extends StatelessWidget {
@@ -53,18 +54,22 @@ class UsersBody extends StatelessWidget {
           //print(state.users.length);
           List<UserProfile> users = state.users;
           return SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.only(top: 0),
-              color: Colors.white,
-              child: Column(
-                children: [
-                  ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 24.0),
-                      shrinkWrap: true,
-                      itemBuilder: (context, int index) {
-                        Color currentColor =
-                            colors[random.nextInt(colors.length)];
-                        return Container(
+            child: RefreshIndicator(
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                padding: EdgeInsets.only(top: 0),
+                color: Colors.white,
+                child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 24.0),
+                    shrinkWrap: true,
+                    itemBuilder: (context, int index) {
+                      Color currentColor = colors[random.nextInt(colors.length)];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, ChatScreen.routeName,
+                              arguments: users[index].id);
+                        },
+                        child: Container(
                           decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
@@ -96,8 +101,7 @@ class UsersBody extends StatelessWidget {
                                     : Container(
                                         width: 56,
                                         height: 56,
-                                        child: Image.network(
-                                            users[index].avatarUrl),
+                                        child: Image.network(users[index].avatarUrl),
                                       ),
                                 borderRadius: BorderRadius.circular(28.0),
                               ),
@@ -112,11 +116,15 @@ class UsersBody extends StatelessWidget {
                               ),
                             ],
                           ),
-                        );
-                      },
-                      itemCount: users.length),
-                ],
+                        ),
+                      );
+                    },
+                    itemCount: users.length),
               ),
+              onRefresh: () async {
+                context.read<UsersCubit>().getUsers();
+              },
+              color: Colors.black,
             ),
           );
         } else {
@@ -168,7 +176,7 @@ class UsersAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  showAlertDialog(BuildContext context) {
+  void showAlertDialog(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
       child: Text(
@@ -203,7 +211,6 @@ class UsersAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
     );
 
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {

@@ -10,15 +10,14 @@ class VerifyUser extends StatelessWidget {
     context.read<SignInCubit>().checkCurrentUserStatus();
     return BlocBuilder<SignInCubit, SignInState>(
       builder: (context, state) {
+        //print(state);
         if (state is LoggedOut) {
           return LoginScreen();
         } else if (state is SignedIn) {
           return UsersScreen();
         } else {
           return Center(
-            child: CircularProgressIndicator(
-              color: Colors.white,
-            ),
+            child: CircularProgressIndicator(color: Colors.white),
           );
         }
       },

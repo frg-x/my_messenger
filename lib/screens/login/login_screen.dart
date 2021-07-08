@@ -22,9 +22,10 @@ class _LoginScreenState extends State<LoginScreen> {
   var initialScreen = screenMode.signIn;
 
   void validateAndCall(screenMode initialScreen) {
-    bool emailValid = RegExp(
-            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+    bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(_email);
+
+    FocusScope.of(context).requestFocus(FocusNode());
 
     if (!emailValid) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -51,9 +52,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //print(MediaQuery.of(context).viewInsets.bottom);
     return BlocConsumer<SignInCubit, SignInState>(builder: (context, state) {
       if (state is LoggedOut) {
         return Scaffold(
+          resizeToAvoidBottomInset: false,
           backgroundColor: Colors.white38,
           body: Container(
             padding: EdgeInsets.symmetric(horizontal: 36, vertical: 12),
@@ -63,27 +66,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('mY', style: AllStyles.font48w900white),
-                    Text('MeSsEnGer', style: AllStyles.font36w900white),
+                    Text('mY', style: AllStyles.font36w900white),
+                    Text('MeSsEnGer', style: AllStyles.font28w900white),
                   ],
                 ),
                 SizedBox(height: 32),
                 Column(
                   children: [
-                    TextField(
-                      onChanged: (email) => _email = email,
-                      style: TextStyle(fontSize: 16.0, color: Colors.black54),
-                      decoration: AllStyles.signInInputDecoration.copyWith(
-                        hintText: 'Enter your email',
+                    SizedBox(
+                      height: 40,
+                      child: TextField(
+                        onChanged: (email) => _email = email,
+                        style: TextStyle(fontSize: 16.0, color: Colors.black54),
+                        decoration: AllStyles.signInInputDecoration.copyWith(
+                          hintText: 'Enter your email',
+                        ),
                       ),
                     ),
                     SizedBox(height: 16.0),
-                    TextField(
-                      onChanged: (password) => _password = password,
-                      obscureText: true,
-                      style: TextStyle(fontSize: 16.0, color: Colors.black54),
-                      decoration: AllStyles.signInInputDecoration.copyWith(
-                        hintText: 'Enter your password',
+                    SizedBox(
+                      height: 40,
+                      child: TextField(
+                        onChanged: (password) => _password = password,
+                        obscureText: true,
+                        style: TextStyle(fontSize: 16.0, color: Colors.black54),
+                        decoration: AllStyles.signInInputDecoration.copyWith(
+                          hintText: 'Enter your password',
+                        ),
                       ),
                     ),
                     SizedBox(height: 16.0),
@@ -94,15 +103,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () => validateAndCall(initialScreen),
                                 child: Text(
                                   'Create Account',
-                                  style: TextStyle(
-                                      color: Colors.black54, fontSize: 16),
+                                  style: TextStyle(color: Colors.black54, fontSize: 16),
                                 ),
                                 style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.white),
+                                  backgroundColor: MaterialStateProperty.all(Colors.white),
                                   padding: MaterialStateProperty.all(
-                                    EdgeInsets.symmetric(
-                                        horizontal: 12.0, vertical: 6.0),
+                                    EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
                                   ),
                                 ),
                               ),
@@ -132,15 +138,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () => validateAndCall(initialScreen),
                                 child: Text(
                                   'Sign In',
-                                  style: TextStyle(
-                                      color: Colors.black54, fontSize: 16),
+                                  style: TextStyle(color: Colors.black54, fontSize: 16),
                                 ),
                                 style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.white),
+                                  backgroundColor: MaterialStateProperty.all(Colors.white),
                                   padding: MaterialStateProperty.all(
-                                    EdgeInsets.symmetric(
-                                        horizontal: 12.0, vertical: 6.0),
+                                    EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
                                   ),
                                 ),
                               ),
@@ -165,6 +168,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                   ],
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).viewInsets.bottom == 0
+                      ? 0
+                      : MediaQuery.of(context).viewInsets.bottom - 40,
                 ),
               ],
             ),
