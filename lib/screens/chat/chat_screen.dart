@@ -10,6 +10,7 @@ import 'package:my_messenger/cubit/messages/chat_cubit.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_bottom_nav_bar.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_file_bubble.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_image_preview_bubble.dart';
+import 'package:my_messenger/screens/chat/widgets/chat_temp_file_bubble.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_text_bubble.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -28,8 +29,9 @@ class _ChatScreenState extends State<ChatScreen> {
     partnerId = ModalRoute.of(context)!.settings.arguments as String;
     String myId = context.read<ChatCubit>().userId;
     context.read<ChatCubit>().setPartnerId(partnerId: partnerId);
+    context.read<ChatCubit>().checkDownloadsDir();
+
     return Scaffold(
-      //appBar: ChatAppBar(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -56,16 +58,33 @@ class _ChatScreenState extends State<ChatScreen> {
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: ChatBottomNavBar(userId: partnerId),
       extendBody: true,
-      body: BlocBuilder<ChatCubit, ChatState>(
+      body: BlocConsumer<ChatCubit, ChatState>(
+        listener: (context, state) {
+          if (state is UploadFinished) {
+            context.read<ChatCubit>().sendFile(content: '');
+          }
+        },
         builder: (context, state) {
-          if (state is ChatInfo) {
-            //print(state.channelId);
-            var channelId = state.channelId;
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                channelId.isNotEmpty
-                    ? StreamBuilder(
+          //print(state);
+          if (state is! ChatInitial) {
+            var channelId = context.read<ChatCubit>().channelId;
+            return channelId.isEmpty
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          'No messages here yet',
+                          style: AllStyles.font15w400lightGrayAnother,
+                        ),
+                      ),
+                      SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 56),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection('messages')
                             .doc(channelId)
@@ -73,52 +92,50 @@ class _ChatScreenState extends State<ChatScreen> {
                             .orderBy('timestamp', descending: true)
                             //.limit(_limit)
                             .snapshots(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Center(
-                                  child: Text(
-                                    'No message here yet',
-                                    style: AllStyles.font15w400lightGrayAnother,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: MediaQuery.of(context).viewInsets.bottom,
-                                ),
-                              ],
+                        builder: (context, AsyncSnapshot snapshot) {
+                          if (!snapshot.hasData || (snapshot.data as QuerySnapshot).docs.isEmpty) {
+                            return Center(
+                              child: Text(
+                                'No messages here yet',
+                                style: AllStyles.font15w400lightGrayAnother,
+                              ),
                             );
                           } else {
-                            var messagesListSnapshot = snapshot.data as QuerySnapshot;
-                            var messageList = messagesListSnapshot.docs;
-                            //print(messages.first['content']);
+                            var messageList = snapshot.data!.docs;
                             return Expanded(
                               child: ListView.builder(
                                 physics: BouncingScrollPhysics(),
                                 padding: EdgeInsets.symmetric(horizontal: 24),
                                 itemBuilder: (context, int index) {
-                                  var message = messageList[index];
-                                  if (message['type'] == MessageContentType.text.index) {
-                                    return TextBubble(
-                                      content: message['content'],
-                                      isMe: message['idFrom'] == myId,
-                                    );
-                                  } else if (message['type'] == MessageContentType.file.index) {
-                                    return FileBubble(
-                                      content: message['content'],
-                                      isMe: message['idFrom'] == myId,
-                                      metaData: message['metadata'],
-                                    );
+                                  if (index == 0) {
+                                    return TempFileBubble(name: 'test', size: '123456');
                                   } else {
-                                    return ImagePreviewBubble(
-                                      content: message['content'],
-                                      isMe: message['idFrom'] == myId,
-                                      metadata: message['metadata'],
-                                    );
+                                    index--;
+                                    var message = messageList[index];
+                                    var messageData = message.data();
+                                    if ((messageData['type'] as int) ==
+                                        MessageContentType.text.index) {
+                                      return TextBubble(
+                                        content: message['content'],
+                                        isMe: message['idFrom'] == myId,
+                                      );
+                                    } else if (messageData['type'] ==
+                                        MessageContentType.file.index) {
+                                      return FileBubble(
+                                        content: messageData['content'],
+                                        senderIsMe: messageData['idFrom'] == myId,
+                                        metaData: messageData['metadata'],
+                                      );
+                                    } else {
+                                      return ImagePreviewBubble(
+                                        content: messageData['content'],
+                                        isMe: messageData['idFrom'] == myId,
+                                        metadata: messageData['metadata'],
+                                      );
+                                    }
                                   }
                                 },
-                                itemCount: messageList.length,
+                                itemCount: (snapshot.data.docs.length) + 1,
                                 reverse: true,
                                 //shrinkWrap: true,
                                 //controller: listScrollController,
@@ -126,24 +143,10 @@ class _ChatScreenState extends State<ChatScreen> {
                             );
                           }
                         },
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(
-                              'No message here yet',
-                              style: AllStyles.font15w400lightGrayAnother,
-                            ),
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).viewInsets.bottom,
-                          ),
-                        ],
                       ),
-                SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 56),
-              ],
-            );
+                      SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 56),
+                    ],
+                  );
           } else {
             return Center(
               child: CircularProgressIndicator(),

@@ -14,7 +14,11 @@ class UsersCubit extends Cubit<UsersState> {
 
   Future<void> getUsers() async {
     users = [];
-    users = await fireStore.getUsers();
-    emit(UsersList(users));
+    try {
+      users = await fireStore.getUsers();
+      emit(UsersList(users));
+    } catch (e) {
+      print(e);
+    }
   }
 }

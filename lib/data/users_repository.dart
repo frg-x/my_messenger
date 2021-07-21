@@ -43,7 +43,6 @@ class UsersRepository {
       UserProfile user = UserProfile.fromJson(userData);
       usersList.add(user);
     });
-
     return usersList;
   }
 

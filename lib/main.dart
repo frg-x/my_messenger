@@ -13,7 +13,7 @@ import 'package:my_messenger/screens/users/users_screen.dart';
 import 'package:my_messenger/screens/verify_user.dart';
 
 void main() async {
-  print('void main');
+  //print('void main');
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SystemChrome.setPreferredOrientations([
@@ -24,7 +24,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    print('Started app');
+    //print('Started app');
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => SignInCubit()),

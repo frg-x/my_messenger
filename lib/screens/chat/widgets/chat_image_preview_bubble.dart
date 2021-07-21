@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_messenger/screens/chat/widgets/chat_big_image.dart';
 
 class ImagePreviewBubble extends StatelessWidget {
   const ImagePreviewBubble({Key? key, required this.content, required this.isMe, this.metadata})
@@ -19,16 +20,17 @@ class ImagePreviewBubble extends StatelessWidget {
         GestureDetector(
           onTap: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) {
-                    return BigImage(
-                      url: metadata['url'],
-                      uniqueId: uniqueId,
-                    );
-                  },
-                  maintainState: true,
-                ));
+              context,
+              MaterialPageRoute(
+                builder: (_) {
+                  return ChatBigImage(
+                    url: metadata['url'],
+                    uniqueId: uniqueId,
+                  );
+                },
+                maintainState: true,
+              ),
+            );
           },
           child: Container(
             constraints: BoxConstraints(
@@ -40,58 +42,24 @@ class ImagePreviewBubble extends StatelessWidget {
             decoration: BoxDecoration(
               border:
                   Border.all(color: isMe ? Color(0xFF7F48FB).withOpacity(0.3) : Color(0xFFEEEEEE)),
-              borderRadius: BorderRadius.circular(4.0),
+              borderRadius: BorderRadius.circular(8.0),
               color: isMe ? Color(0xFF7F48FB).withOpacity(0.1) : Colors.white,
             ),
-            child: Hero(
-              tag: uniqueId,
-              child: CachedNetworkImage(
-                imageUrl: metadata['url'],
-                placeholder: (context, url) => CircularProgressIndicator(),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(6.0),
+              child: Hero(
+                tag: uniqueId,
+                child: CachedNetworkImage(
+                  imageUrl: metadata['url'],
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
+                transitionOnUserGestures: true,
               ),
-              transitionOnUserGestures: true,
             ),
           ),
         ),
       ],
-    );
-  }
-}
-
-class BigImage extends StatefulWidget {
-  BigImage({required this.url, required this.uniqueId});
-
-  final String url;
-  final String uniqueId;
-
-  @override
-  _BigImageState createState() => _BigImageState();
-}
-
-class _BigImageState extends State<BigImage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: GestureDetector(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Hero(
-            tag: widget.uniqueId,
-            child: CachedNetworkImage(
-              imageUrl: widget.url,
-              placeholder: (context, url) => CircularProgressIndicator(),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            ),
-            transitionOnUserGestures: true,
-          ),
-        ),
-        onTap: () {
-          FocusScope.of(context).unfocus();
-          Navigator.pop(context);
-        },
-      ),
     );
   }
 }

@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:my_messenger/constants.dart';
@@ -20,7 +17,7 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
 
   bool isTextEmpty = true;
 
-  void checkIsEmpty() {
+  void checkTextIsEmpty() {
     setState(() {
       isTextEmpty = _textController.text.isEmpty ? true : false;
     });
@@ -37,60 +34,10 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
     );
   }
 
-  void uploadAndSend({required String channelId, required MessageContentType contentType}) async {
-    var metadata = await uploadAttachment(attachmentType: contentType, channelId: channelId);
-    if (metadata.isNotEmpty) {
-      context.read<ChatCubit>().sendMessage(
-            content: '',
-            contentType: contentType,
-            metaData: metadata,
-          );
-    }
-  }
-
-  Future<Map<String, String>> uploadAttachment({
-    required MessageContentType attachmentType,
+  void attachmentPickerBottomSheet({
     required String channelId,
+    required BuildContext context,
   }) async {
-    //String uuid = Uuid().v1().toString();
-    Map<String, String> fileInfo = {};
-    late String filePath;
-    late String fileName;
-    FilePickerResult? pickedFile;
-
-    if (attachmentType == MessageContentType.file) {
-      pickedFile = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf', 'doc', 'xlsx', 'xls', 'docx'],
-      );
-    } else if (attachmentType == MessageContentType.media) {
-      pickedFile = await FilePicker.platform.pickFiles(type: FileType.media);
-    } else {
-      pickedFile = await FilePicker.platform.pickFiles(type: FileType.any);
-    }
-
-    if (pickedFile != null) {
-      filePath = pickedFile.files.first.path!;
-      fileName = pickedFile.files.first.name;
-
-      File file = File(filePath);
-
-      Reference storageRef = FirebaseStorage.instance.ref('messages/$channelId/$fileName');
-
-      try {
-        await storageRef.putFile(file);
-        fileInfo.addAll({'url': await storageRef.getDownloadURL()});
-        fileInfo.addAll({'name': fileName});
-        fileInfo.addAll(
-            {'size': await storageRef.getMetadata().then((value) => value.size.toString())});
-      } on FirebaseException catch (e) {
-        print(e);
-      }
-    } else {}
-    return fileInfo;
-  }
-
-  void attachmentPickerBottomSheet({required String channelId}) async {
     showModalBottomSheet(
         context: context,
         barrierColor: Colors.black.withOpacity(0.8),
@@ -100,7 +47,7 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
             topRight: Radius.circular(20.0),
           ),
         ),
-        builder: (BuildContext context) {
+        builder: (BuildContext modalContext) {
           return Container(
             height: 164,
             padding: EdgeInsets.only(top: 8, left: 28, right: 28),
@@ -109,9 +56,12 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
                 modalSheetDivider(),
                 const SizedBox(height: 22.0),
                 GestureDetector(
-                  onTap: () async {
-                    uploadAndSend(channelId: channelId, contentType: MessageContentType.media);
-                    Navigator.pop(context);
+                  onTap: () {
+                    Navigator.pop(modalContext);
+                    context.read<ChatCubit>().pickAndUpload(
+                          channelId: channelId,
+                          attachmentType: MessageContentType.media,
+                        );
                   },
                   child: Container(
                     color: Colors.transparent,
@@ -129,9 +79,12 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
                 ),
                 const SizedBox(height: 32),
                 GestureDetector(
-                  onTap: () async {
-                    uploadAndSend(channelId: channelId, contentType: MessageContentType.file);
+                  onTap: () {
                     Navigator.pop(context);
+                    context.read<ChatCubit>().pickAndUpload(
+                          channelId: channelId,
+                          attachmentType: MessageContentType.file,
+                        );
                   },
                   child: Container(
                     color: Colors.transparent,
@@ -181,7 +134,7 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
                   borderRadius: BorderRadius.circular(16.0),
                 ),
               ),
-              onTap: () => attachmentPickerBottomSheet(channelId: channelId),
+              onTap: () => attachmentPickerBottomSheet(channelId: channelId, context: context),
             ),
             const SizedBox(width: 8.0),
             Expanded(
@@ -192,7 +145,7 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
                   children: [
                     TextField(
                       controller: _textController,
-                      onChanged: (value) => checkIsEmpty(),
+                      onChanged: (value) => checkTextIsEmpty(),
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.only(top: 22, left: 12, right: 42),
                         hintText: 'Send a message...',
