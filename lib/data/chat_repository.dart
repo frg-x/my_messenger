@@ -3,7 +3,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 class ChatRepository {
   FirebaseStorage storage = FirebaseStorage.instance;
-  CollectionReference messages = FirebaseFirestore.instance.collection('messages');
+  CollectionReference messages =
+      FirebaseFirestore.instance.collection('messages');
 
   String getChannelId({required List<String> currentUsers}) {
     if (currentUsers[0].hashCode <= currentUsers[1].hashCode) {
@@ -33,6 +34,8 @@ class ChatRepository {
       'idFrom': currentUsers[0],
       'idTo': currentUsers[1],
       'metadata': metaData ?? {},
+    }).catchError((e) {
+      print('ERROR:                    $e');
     });
   }
 }

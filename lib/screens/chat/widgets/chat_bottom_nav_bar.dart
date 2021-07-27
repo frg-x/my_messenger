@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:my_messenger/constants.dart';
@@ -110,10 +112,20 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
   Widget build(BuildContext context) {
     String channelId = context.read<ChatCubit>().channelId;
     return Padding(
-      padding: MediaQuery.of(context).viewInsets,
+      padding: EdgeInsets.fromLTRB(
+        0,
+        0,
+        0,
+        MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
-        height: 56.0,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        height: (Platform.isIOS ? 86 : 56),
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 8,
+          bottom: 0,
+        ),
         color: Colors.white,
         alignment: Alignment.topCenter,
         child: Row(
@@ -134,7 +146,8 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
                   borderRadius: BorderRadius.circular(16.0),
                 ),
               ),
-              onTap: () => attachmentPickerBottomSheet(channelId: channelId, context: context),
+              onTap: () => attachmentPickerBottomSheet(
+                  channelId: channelId, context: context),
             ),
             const SizedBox(width: 8.0),
             Expanded(
@@ -147,7 +160,8 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
                       controller: _textController,
                       onChanged: (value) => checkTextIsEmpty(),
                       decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.only(top: 22, left: 12, right: 42),
+                        contentPadding:
+                            const EdgeInsets.only(top: 22, left: 12, right: 42),
                         hintText: 'Send a message...',
                         hintStyle: AllStyles.font15w400lightGrayAnother,
                         border: AllStyles.messageBorderStyle,

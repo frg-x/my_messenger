@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_big_image.dart';
 
 class ImagePreviewBubble extends StatelessWidget {
-  const ImagePreviewBubble({Key? key, required this.content, required this.isMe, this.metadata})
+  const ImagePreviewBubble(
+      {Key? key, required this.content, required this.isMe, this.metadata})
       : super(key: key);
 
   final String content;
@@ -13,6 +14,7 @@ class ImagePreviewBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //print('image: $metadata');
     String uniqueId = DateTime.now().millisecondsSinceEpoch.toString();
     return Row(
       mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -40,8 +42,10 @@ class ImagePreviewBubble extends StatelessWidget {
             padding: EdgeInsets.all(4.0),
             margin: EdgeInsets.symmetric(vertical: 2),
             decoration: BoxDecoration(
-              border:
-                  Border.all(color: isMe ? Color(0xFF7F48FB).withOpacity(0.3) : Color(0xFFEEEEEE)),
+              border: Border.all(
+                  color: isMe
+                      ? Color(0xFF7F48FB).withOpacity(0.3)
+                      : Color(0xFFEEEEEE)),
               borderRadius: BorderRadius.circular(8.0),
               color: isMe ? Color(0xFF7F48FB).withOpacity(0.1) : Colors.white,
             ),

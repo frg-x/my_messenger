@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:my_messenger/constants.dart';
 import 'package:my_messenger/data/chat_repository.dart';
 import 'package:native_pdf_renderer/native_pdf_renderer.dart';
+import 'package:path_provider/path_provider.dart';
 part 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
@@ -28,16 +28,23 @@ class ChatCubit extends Cubit<ChatState> {
   String downloadsDir = '';
   bool isFileUploading = false;
 
-  Future<String> _getAsyncDownloadsDirectory() async {
-    var downloadsDirectory = await DownloadsPathProvider.downloadsDirectory;
-    return downloadsDirectory!.path;
+  Future<String> _getDownloadsDirectory() async {
+    var downloadsDirectory;
+    if (Platform.isIOS) {
+      downloadsDirectory = await getApplicationDocumentsDirectory();
+      return downloadsDirectory.path;
+    } else {
+      downloadsDirectory = '/storage/emulated/0';
+      return downloadsDirectory;
+    }
   }
 
   void checkDownloadsDir() async {
-    downloadsDir = await _getAsyncDownloadsDirectory();
+    downloadsDir = await _getDownloadsDirectory();
   }
 
   String getDownloadsDir() {
+    //print(downloadsDir);
     return downloadsDir;
   }
 
@@ -82,14 +89,14 @@ class ChatCubit extends Cubit<ChatState> {
     required String channelId,
     required MessageContentType attachmentType,
   }) async {
-    FilePickerResult? pickedFile;
+    var pickedFile;
 
     fileName = '';
 
     if (attachmentType == MessageContentType.file) {
       pickedFile = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        //allowedExtensions: ['pdf', 'doc', 'xlsx', 'xls', 'docx'],
+        allowedExtensions: ['pdf', 'doc', 'xlsx', 'xls', 'docx'],
       );
     } else if (attachmentType == MessageContentType.media) {
       pickedFile = await FilePicker.platform.pickFiles(type: FileType.media);
@@ -106,8 +113,20 @@ class ChatCubit extends Cubit<ChatState> {
       return;
 
     File file = File(filePath);
+    final cachedFilesDir = '$downloadsDir/My-Messenger-Cache-Files';
+    final checkDirExistence = await Directory(cachedFilesDir).exists();
+    if (!checkDirExistence) {
+      Directory(cachedFilesDir).create().then((_) {
+        file.copy('$cachedFilesDir/$fileName');
+      });
+    } else {
+      file.copy('$cachedFilesDir/$fileName');
+    }
 
-    Reference storageRef = FirebaseStorage.instance.ref('messages/$channelId/$fileName');
+    //print('$cachedFilesDir/$fileName');
+
+    Reference storageRef =
+        FirebaseStorage.instance.ref('messages/$channelId/$fileName');
 
     try {
       isFileUploading = true;
@@ -115,15 +134,16 @@ class ChatCubit extends Cubit<ChatState> {
 
       task.snapshotEvents.listen((TaskSnapshot snapshot) async {
         if (snapshot.state == TaskState.running) {
-          emit(UploadInProgress(snapshot.bytesTransferred / snapshot.totalBytes, fileName));
+          emit(UploadInProgress(
+              snapshot.bytesTransferred / snapshot.totalBytes, fileName));
         } else if (snapshot.state == TaskState.success) {
           url = await snapshot.ref.getDownloadURL();
           var uploadedMetadata = await snapshot.ref.getMetadata();
           fileInfo.addAll({
             'size': uploadedMetadata.size.toString(),
             'url': url,
-            'name': fileName,
-            'filePath': filePath
+            'name': fileName
+            //'filePath': filePath
           });
           emit(UploadFinished(fileInfo, channelId));
           isFileUploading = false;
@@ -131,25 +151,6 @@ class ChatCubit extends Cubit<ChatState> {
           emit(ChatInfo(channelId));
         }
       });
-
-      // , onError: (e) {
-      //   if (e.code == 'canceled') {
-      //     print('The task has been canceled');
-      //   }
-      //   if (task.snapshot.state == TaskState.canceled) {
-      //     print('The task has been canceled');
-      //   }
-      //   print(TaskState.error);
-      // });
-
-      // bool canceled = await task.cancel();
-      // print('canceled? $canceled');
-
-      // fileInfo.addAll(
-      //     {'url': await task.storage.ref('messages/$channelId/$fileName').getDownloadURL()});
-      // fileInfo.addAll({'name': fileName});
-      // fileInfo.addAll(
-      //     {'size': await storageRef.getMetadata().then((value) => value.size.toString())});
     } on FirebaseException catch (e) {
       print(e);
     }

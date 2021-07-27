@@ -11,6 +11,12 @@ class LoggedOut extends SignInState {
   final String errorText;
   LoggedOut(this.errorText);
 }
+
+class InternetNotConnected extends SignInState {
+  final String errorText;
+  InternetNotConnected(this.errorText);
+}
+
 //
 // class AuthError extends SignInState {
 //   final String message;

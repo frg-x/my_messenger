@@ -63,7 +63,7 @@ class UsersBody extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 24.0),
                     shrinkWrap: true,
                     itemBuilder: (context, int index) {
-                      Color currentColor = colors[random.nextInt(colors.length)];
+                      Color currentColor = colors[index];
                       return GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(context, ChatScreen.routeName,
@@ -101,7 +101,8 @@ class UsersBody extends StatelessWidget {
                                     : Container(
                                         width: 56,
                                         height: 56,
-                                        child: Image.network(users[index].avatarUrl),
+                                        child: Image.network(
+                                            users[index].avatarUrl),
                                       ),
                                 borderRadius: BorderRadius.circular(28.0),
                               ),
@@ -136,7 +137,7 @@ class UsersBody extends StatelessWidget {
 }
 
 class UsersAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final double appBarHeight = 64;
+  final double appBarHeight = 68;
 
   @override
   Widget build(BuildContext context) {

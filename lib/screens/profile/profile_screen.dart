@@ -63,12 +63,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> uploadImage(String filePath, String userId) async {
     File file = File(filePath);
     try {
-      await FirebaseStorage.instance.ref().child('users/avatar_$userId.png').putFile(file);
+      await FirebaseStorage.instance
+          .ref()
+          .child('users/avatar_$userId.png')
+          .putFile(file);
 
-      FirebaseStorage.instance.ref('users/avatar_$userId.png').getDownloadURL().then((value) {
+      FirebaseStorage.instance
+          .ref('users/avatar_$userId.png')
+          .getDownloadURL()
+          .then((value) {
         setState(() {
           avatarUrl = value;
-          print(avatarUrl);
+          //print(avatarUrl);
         });
       });
     } on FirebaseException catch (e) {
@@ -112,9 +118,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           });
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 16),
                           decoration: BoxDecoration(
-                              color: Color(0xFFEEEEEE), borderRadius: BorderRadius.circular(100)),
+                              color: Color(0xFFEEEEEE),
+                              borderRadius: BorderRadius.circular(100)),
                           child: Text(
                             'Quit',
                             style: AllStyles.font15w500darkGray,
@@ -139,18 +147,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             preferLanguage: preferLangController.text,
                             avatarUrl: avatarUrl,
                           );
-                          context.read<SignInCubit>().updateCurrentUserInfo(newUserInfo);
+                          context
+                              .read<SignInCubit>()
+                              .updateCurrentUserInfo(newUserInfo);
                           context.read<SignInCubit>().avatarUrl = avatarUrl;
                           context.read<SignInCubit>().email = email;
                           setState(() {
                             isSaveVisible = true;
                           });
-                          Navigator.popAndPushNamed(context, UsersScreen.routeName);
+                          Navigator.popAndPushNamed(
+                              context, UsersScreen.routeName);
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 16),
                           decoration: BoxDecoration(
-                              color: Color(0xFF7F48FB), borderRadius: BorderRadius.circular(100)),
+                              color: Color(0xFF7F48FB),
+                              borderRadius: BorderRadius.circular(100)),
                           child: Text(
                             'Save',
                             style: AllStyles.font15w500white,
@@ -273,7 +286,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isFirstBuild = false;
     }
     return Scaffold(
-      appBar: ProfileAppBar(validate: validateAndSave, isSaveVisible: isSaveVisible),
+      appBar: ProfileAppBar(
+          validate: validateAndSave, isSaveVisible: isSaveVisible),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -304,7 +318,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               borderRadius: BorderRadius.circular(36),
                             ),
                             child: Container(
-                              child: SvgPicture.asset('assets/icons/camera.svg'),
+                              child:
+                                  SvgPicture.asset('assets/icons/camera.svg'),
                               width: 24,
                               height: 24,
                             ),
@@ -373,8 +388,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             cursorRadius: Radius.circular(2.0),
                             style: AllStyles.font15w500darkGray,
                             cursorColor: AllColors.darkGray,
-                            decoration:
-                                AllStyles.myProfileInputDecoration.copyWith(hintText: 'Phone'),
+                            decoration: AllStyles.myProfileInputDecoration
+                                .copyWith(hintText: 'Phone'),
                             validator: (v) {
                               if (v!.isNotEmpty) {
                                 return null;
@@ -391,8 +406,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: addressController,
                             style: AllStyles.font15w500darkGray,
                             cursorColor: AllColors.darkGray,
-                            decoration:
-                                AllStyles.myProfileInputDecoration.copyWith(hintText: 'Address'),
+                            decoration: AllStyles.myProfileInputDecoration
+                                .copyWith(hintText: 'Address'),
                             validator: (v) {
                               if (v!.isNotEmpty) {
                                 return null;
@@ -409,8 +424,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: genderController,
                             style: AllStyles.font15w500darkGray,
                             cursorColor: AllColors.darkGray,
-                            decoration:
-                                AllStyles.myProfileInputDecoration.copyWith(hintText: 'Gender'),
+                            decoration: AllStyles.myProfileInputDecoration
+                                .copyWith(hintText: 'Gender'),
                             validator: (v) {
                               if (v!.isNotEmpty) {
                                 return null;
@@ -472,7 +487,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final double appBarHeight = 44;
+  final double appBarHeight = 48;
 
   final bool isSaveVisible;
   final Function validate;

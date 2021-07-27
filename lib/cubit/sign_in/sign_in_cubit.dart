@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:my_messenger/data/users_repository.dart';
 import 'package:my_messenger/models/user_profile.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 
 part 'sign_in_state.dart';
 
@@ -55,8 +59,8 @@ class SignInCubit extends Cubit<SignInState> {
 
   void signInWithEmailAndPassword(String email, String password) async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
       user = userCredential.user!;
       emit(SignedIn());
     } on FirebaseAuthException catch (e) {
@@ -72,7 +76,36 @@ class SignInCubit extends Cubit<SignInState> {
     }
   }
 
-  void checkCurrentUserStatus() {
+  bool _isConnected = false;
+
+  set isConnected(bool value) {
+    _isConnected = value;
+  }
+
+  Stream<bool> checkConnectionStatus() async* {
+    while (true) {
+      try {
+        http.Response response = await http
+            .get(Uri.parse('https://www.google.com'))
+            .timeout(Duration(seconds: 2));
+        if (response.statusCode == 200) {
+          yield true;
+        }
+      } on TimeoutException catch (e) {
+        yield false;
+        print('Timeout Error: $e');
+      } on SocketException catch (e) {
+        yield false;
+        print('Socket Error: $e');
+      } on Error catch (e) {
+        yield false;
+        print('General Error: $e');
+      }
+      await Future.delayed(Duration(seconds: 3));
+    }
+  }
+
+  void checkCurrentUserStatus() async {
     auth.authStateChanges().listen((currentUser) {
       if (currentUser == null) {
         isLogged = false;
@@ -86,14 +119,13 @@ class SignInCubit extends Cubit<SignInState> {
   }
 
   void getCurrentUserInfo() async {
-    userProfile = await firebase.getCurrentUserInfo();
-    //print(userProfile.email);
+    userProfile = (await firebase.getCurrentUserInfo())!;
     //print(userProfile.email);
   }
 
   Future<void> updateCurrentUserInfo(UserProfile newUserInfo) async {
     await firebase.updateUserInfo(newUserInfo);
-    userProfile = await firebase.getCurrentUserInfo();
+    userProfile = (await firebase.getCurrentUserInfo())!;
     //userProfile = newUserInfo;
   }
 

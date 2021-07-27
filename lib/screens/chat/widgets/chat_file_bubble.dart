@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,9 +8,7 @@ import 'package:my_messenger/cubit/messages/chat_cubit.dart';
 import 'package:my_messenger/screens/chat/cubit/download/download_cubit.dart';
 import 'package:my_messenger/screens/chat/cubit/pdf_preview/pdf_preview_cubit.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_download_icon.dart';
-import 'package:my_messenger/screens/chat/widgets/chat_pdf_image.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_upload_icon.dart';
-import 'package:native_pdf_renderer/native_pdf_renderer.dart';
 import 'package:open_file/open_file.dart';
 
 class FileBubble extends StatefulWidget {
@@ -53,20 +53,28 @@ class _FileBubbleState extends State<FileBubble> {
   @override
   void initState() {
     downloadsDir = context.read<ChatCubit>().getDownloadsDir();
+    downloadsDir = '$downloadsDir/My-Messenger-Cache-Files';
     isPDF = widget.metaData['name'].toLowerCase().endsWith('.pdf');
     super.initState();
+  }
+
+  bool isFileExists(String fullPath) {
+    File file = File(fullPath);
+    return file.existsSync() ? true : false;
   }
 
   @override
   Widget build(BuildContext context) {
     String fileInfo = '';
     String filePath = '$downloadsDir/${widget.metaData['name']}';
+    //print(filePath);
     String size = widget.metaData != null ? widget.metaData['size'] : '0';
     return widget.senderIsMe
         ? MultiBlocProvider(
             providers: [
               BlocProvider(create: (context) => ChatCubit()),
               BlocProvider(create: (context) => DownloadCubit()),
+              BlocProvider(create: (context) => PdfPreviewCubit()),
             ],
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -74,12 +82,21 @@ class _FileBubbleState extends State<FileBubble> {
                 BlocBuilder<ChatCubit, ChatState>(
                   builder: (context, state) {
                     fileInfo = formatFileSize(int.parse(size));
+                    bool isPDFLoaded =
+                        context.read<PdfPreviewCubit>().isPDFLoaded;
+                    if (isPDF && isFileExists(filePath) && !isPDFLoaded) {
+                      context.read<PdfPreviewCubit>().getPDFPreview(filePath);
+                      //print(isPDFLoaded);
+                      //print('loaded $filePath');
+                    }
                     return GestureDetector(
                       onTap: () {
                         openFile(filePath);
+                        //print(filePath);
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         margin: EdgeInsets.symmetric(vertical: 2),
                         decoration: BoxDecoration(
                           border: Border.all(color: Color(0xFF7F48FB)),
@@ -90,46 +107,100 @@ class _FileBubbleState extends State<FileBubble> {
                           ),
                           color: Color(0xFF7F48FB),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              child: chatUploadIcon(
-                                state: state,
-                                filename: widget.metaData['name'],
-                                size: size,
-                              ),
-                              width: 32,
-                              height: 40,
-                            ),
-                            SizedBox(width: 10),
-                            Container(
-                              constraints:
-                                  BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
-                              child: Column(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: (isPDF && isFileExists(filePath))
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(6.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    BlocBuilder<PdfPreviewCubit,
+                                        PdfPreviewState>(
+                                      builder: (context, state) {
+                                        if (state is PdfPreviewDone) {
+                                          return SizedBox(
+                                              child: Image(
+                                            image: MemoryImage(
+                                                state.preview.bytes),
+                                            height: 150,
+                                          ));
+                                        } else {
+                                          return SizedBox(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(4.0),
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2.5,
+                                              ),
+                                            ),
+                                            width: 24,
+                                            height: 24,
+                                          );
+                                        }
+                                      },
+                                    ),
+                                    Text(
+                                      '${widget.metaData['name']}',
+                                      style: AllStyles.font15w500white.copyWith(
+                                        color: Color(0xFFFFFFFF),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 10,
+                                      softWrap: true,
+                                    ),
+                                    Text(
+                                      fileInfo,
+                                      style: AllStyles.font14w400white.copyWith(
+                                        color: Color(0xFFEEEEEE),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    '${widget.metaData['name']}',
-                                    style: AllStyles.font15w500white.copyWith(
-                                      color: Color(0xFFFFFFFF),
+                                  SizedBox(
+                                    child: chatUploadIcon(
+                                      state: state,
+                                      filename: widget.metaData['name'],
+                                      size: size,
                                     ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 10,
-                                    softWrap: true,
+                                    width: 32,
+                                    height: 40,
                                   ),
-                                  Text(
-                                    fileInfo,
-                                    style: AllStyles.font14w400white.copyWith(
-                                      color: Color(0xFFFFFFFF).withOpacity(0.7),
+                                  SizedBox(width: 10),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${widget.metaData['name']}',
+                                          style: AllStyles.font15w500white
+                                              .copyWith(
+                                            color: Color(0xFFFFFFFF),
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 10,
+                                          softWrap: true,
+                                        ),
+                                        Text(
+                                          fileInfo,
+                                          style: AllStyles.font14w400white
+                                              .copyWith(
+                                            color: Color(0xFFFFFFFF)
+                                                .withOpacity(0.7),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
                       ),
                     );
                   },
@@ -146,15 +217,16 @@ class _FileBubbleState extends State<FileBubble> {
               builder: (context, downloadState) {
                 //print(downloadState);
                 if (downloadState is DownloadInProgress) {
-                  fileInfo = '${(downloadState.percent * 100).toStringAsFixed(0)}% downloaded';
+                  fileInfo =
+                      '${(downloadState.percent * 100).toStringAsFixed(0)}% downloaded';
                 } else {
                   fileInfo = formatFileSize(int.parse(size));
                 }
                 bool isPDFLoaded = context.read<PdfPreviewCubit>().isPDFLoaded;
                 if (isPDF && isFileExists(filePath) && !isPDFLoaded) {
                   context.read<PdfPreviewCubit>().getPDFPreview(filePath);
-                  print(isPDFLoaded);
-                  print('loaded $filePath');
+                  //print(isPDFLoaded);
+                  //print('loaded $filePath');
                 }
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -163,7 +235,8 @@ class _FileBubbleState extends State<FileBubble> {
                       onTap: () async {
                         if (downloadState is DownloadInitial) {
                           if (isFileExists(filePath)) {
-                            openFile('$downloadsDir/${widget.metaData['name']}');
+                            openFile(
+                                '$downloadsDir/${widget.metaData['name']}');
                           } else {
                             //print('Start downloading');
                             context.read<DownloadCubit>().downloadURL(
@@ -178,7 +251,8 @@ class _FileBubbleState extends State<FileBubble> {
                         }
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         margin: EdgeInsets.symmetric(vertical: 2),
                         decoration: BoxDecoration(
                           border: Border.all(color: Color(0xFFEEEEEE)),
@@ -189,25 +263,28 @@ class _FileBubbleState extends State<FileBubble> {
                           ),
                           color: Colors.white,
                         ),
+                        width: MediaQuery.of(context).size.width * 0.5,
                         child: (isPDF && isFileExists(filePath))
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(6.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    BlocBuilder<PdfPreviewCubit, PdfPreviewState>(
+                                    BlocBuilder<PdfPreviewCubit,
+                                        PdfPreviewState>(
                                       builder: (context, state) {
                                         if (state is PdfPreviewDone) {
                                           return SizedBox(
                                               child: Image(
-                                            image: MemoryImage(state.preview.bytes),
-                                            width: MediaQuery.of(context).size.width * 0.3,
+                                            image: MemoryImage(
+                                                state.preview.bytes),
                                             height: 150,
                                           ));
                                         } else {
                                           return SizedBox(
                                             child: Padding(
-                                              padding: const EdgeInsets.all(4.0),
+                                              padding:
+                                                  const EdgeInsets.all(4.0),
                                               child: CircularProgressIndicator(
                                                 strokeWidth: 2.5,
                                               ),
@@ -253,14 +330,16 @@ class _FileBubbleState extends State<FileBubble> {
                                   ),
                                   SizedBox(width: 10),
                                   Container(
-                                    constraints: BoxConstraints(
-                                        maxWidth: MediaQuery.of(context).size.width * 0.6),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           '${widget.metaData['name']}',
-                                          style: AllStyles.font15w500white.copyWith(
+                                          style: AllStyles.font15w500white
+                                              .copyWith(
                                             color: Color(0xFF333333),
                                           ),
                                           overflow: TextOverflow.ellipsis,
@@ -269,7 +348,8 @@ class _FileBubbleState extends State<FileBubble> {
                                         ),
                                         Text(
                                           fileInfo,
-                                          style: AllStyles.font14w400white.copyWith(
+                                          style: AllStyles.font14w400white
+                                              .copyWith(
                                             color: Color(0xFF787878),
                                           ),
                                         ),

@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:bloc/bloc.dart';
-import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:meta/meta.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 part 'download_state.dart';
@@ -10,8 +10,6 @@ part 'download_state.dart';
 class DownloadCubit extends Cubit<DownloadState> {
   DownloadCubit() : super(DownloadInitial());
 
-  // Dio _dio = Dio();
-  // var _token = CancelToken();
   late DownloadTask task;
   Map<String, String> fileInfo = {};
   String localPath = '';
@@ -29,15 +27,17 @@ class DownloadCubit extends Cubit<DownloadState> {
     await task.cancel();
     file.delete();
     emit(DownloadInitial());
-    // if (!_token.isCancelled) {
-    //   try {
-    //     _token.cancel();
-    //   } on DioError {
-    //     print("Dio error");
-    //   }
-    // } else {
-    //   print('already cancelled');
-    // }
+  }
+
+  Future<String> _getDownloadsDirectory() async {
+    var downloadsDirectory;
+    if (Platform.isIOS) {
+      downloadsDirectory = await getApplicationDocumentsDirectory();
+      return downloadsDirectory.path;
+    } else {
+      downloadsDirectory = '/storage/emulated/0';
+      return downloadsDirectory;
+    }
   }
 
   void downloadURL({
@@ -47,9 +47,11 @@ class DownloadCubit extends Cubit<DownloadState> {
     final isPermissionStatusGranted = await _getStoragePermission();
 
     if (isPermissionStatusGranted) {
-      var downloadsDirectory = await DownloadsPathProvider.downloadsDirectory;
-      localPath = '${downloadsDirectory!.path}/$filename';
+      var downloadsDirectory = await _getDownloadsDirectory();
+
+      localPath = '$downloadsDirectory/My-Messenger-Cache-Files/$filename';
       file = File(localPath);
+      print(localPath);
 
       try {
         Reference tst = FirebaseStorage.instance.refFromURL(url);
@@ -78,24 +80,8 @@ class DownloadCubit extends Cubit<DownloadState> {
       } catch (e) {
         print(e);
       }
-
-      // try {
-      //   await _dio.download(
-      //     url,
-      //     localPath,
-      //     deleteOnError: true,
-      //     onReceiveProgress: (current, total) {
-      //       double percent = current / total;
-      //       emit(DownloadInProgress(percent));
-      //     },
-      //     cancelToken: _token,
-      //   );
-      //   emit(DownloadFinished(localPath));
-      // } on DioError catch (exception) {
-      //   if (exception.type == DioErrorType.cancel) {
-      //     emit(DownloadInitial());
-      //   }
-      // }
+    } else {
+      throw 'Permission not granted!';
     }
   }
 }

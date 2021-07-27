@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +79,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           style: AllStyles.font15w400lightGrayAnother,
                         ),
                       ),
-                      SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 56),
+                      SizedBox(
+                          height:
+                              MediaQuery.of(context).viewInsets.bottom + 86),
                     ],
                   )
                 : Column(
@@ -93,7 +96,8 @@ class _ChatScreenState extends State<ChatScreen> {
                             //.limit(_limit)
                             .snapshots(),
                         builder: (context, AsyncSnapshot snapshot) {
-                          if (!snapshot.hasData || (snapshot.data as QuerySnapshot).docs.isEmpty) {
+                          if (!snapshot.hasData ||
+                              (snapshot.data as QuerySnapshot).docs.isEmpty) {
                             return Center(
                               child: Text(
                                 'No messages here yet',
@@ -108,29 +112,31 @@ class _ChatScreenState extends State<ChatScreen> {
                                 padding: EdgeInsets.symmetric(horizontal: 24),
                                 itemBuilder: (context, int index) {
                                   if (index == 0) {
-                                    return TempFileBubble(name: 'test', size: '123456');
+                                    return TempFileBubble(
+                                        name: 'test', size: '123456');
                                   } else {
                                     index--;
                                     var message = messageList[index];
                                     var messageData = message.data();
-                                    if ((messageData['type'] as int) ==
-                                        MessageContentType.text.index) {
-                                      return TextBubble(
-                                        content: message['content'],
-                                        isMe: message['idFrom'] == myId,
-                                      );
-                                    } else if (messageData['type'] ==
+                                    if (messageData['type'] ==
                                         MessageContentType.file.index) {
                                       return FileBubble(
                                         content: messageData['content'],
-                                        senderIsMe: messageData['idFrom'] == myId,
+                                        senderIsMe:
+                                            messageData['idFrom'] == myId,
                                         metaData: messageData['metadata'],
                                       );
-                                    } else {
+                                    } else if (messageData['type'] ==
+                                        MessageContentType.media.index) {
                                       return ImagePreviewBubble(
                                         content: messageData['content'],
                                         isMe: messageData['idFrom'] == myId,
                                         metadata: messageData['metadata'],
+                                      );
+                                    } else {
+                                      return TextBubble(
+                                        content: message['content'],
+                                        isMe: message['idFrom'] == myId,
                                       );
                                     }
                                   }
@@ -144,7 +150,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           }
                         },
                       ),
-                      SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 56),
+                      SizedBox(
+                          height: MediaQuery.of(context).viewInsets.bottom +
+                              (Platform.isIOS ? 86 : 56)),
                     ],
                   );
           } else {
