@@ -136,6 +136,7 @@ class ChatCubit extends Cubit<ChatState> {
         if (snapshot.state == TaskState.running) {
           emit(UploadInProgress(
               snapshot.bytesTransferred / snapshot.totalBytes, fileName));
+          throw Exception('Error');
         } else if (snapshot.state == TaskState.success) {
           url = await snapshot.ref.getDownloadURL();
           var uploadedMetadata = await snapshot.ref.getMetadata();
