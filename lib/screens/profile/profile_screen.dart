@@ -487,7 +487,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final double appBarHeight = 48;
+  final double appBarHeight = 68;
 
   final bool isSaveVisible;
   final Function validate;
@@ -504,7 +504,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 24),
-          height: 44.0,
+          height: 84.0,
           color: Colors.white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_big_image.dart';
@@ -53,11 +53,17 @@ class ImagePreviewBubble extends StatelessWidget {
               borderRadius: BorderRadius.circular(6.0),
               child: Hero(
                 tag: uniqueId,
-                child: CachedNetworkImage(
-                  imageUrl: metadata['url'],
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
+                child: ExtendedImage.network(
+                  metadata['url'],
+                  fit: BoxFit.fitWidth,
+                  cache: true,
+                  //cancelToken: cancellationToken,
                 ),
+                // child: CachedNetworkImage(
+                //   imageUrl: metadata['url'],
+                //   placeholder: (context, url) => CircularProgressIndicator(),
+                //   errorWidget: (context, url, error) => Icon(Icons.error),
+                // ),
                 transitionOnUserGestures: true,
               ),
             ),

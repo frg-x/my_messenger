@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_messenger/constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_messenger/cubit/messages/chat_cubit.dart';
+import 'package:my_messenger/cubit/chat/chat_cubit.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_bottom_nav_bar.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_file_bubble.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_image_preview_bubble.dart';
@@ -112,8 +112,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 padding: EdgeInsets.symmetric(horizontal: 24),
                                 itemBuilder: (context, int index) {
                                   if (index == 0) {
-                                    return TempFileBubble(
-                                        name: 'test', size: '123456');
+                                    return TempFileBubble();
                                   } else {
                                     index--;
                                     var message = messageList[index];

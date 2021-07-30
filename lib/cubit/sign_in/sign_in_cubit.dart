@@ -76,12 +76,6 @@ class SignInCubit extends Cubit<SignInState> {
     }
   }
 
-  bool _isConnected = false;
-
-  set isConnected(bool value) {
-    _isConnected = value;
-  }
-
   Stream<bool> checkConnectionStatus() async* {
     while (true) {
       try {

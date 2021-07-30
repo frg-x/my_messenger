@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:my_messenger/constants.dart';
-import 'package:my_messenger/cubit/messages/chat_cubit.dart';
+import 'package:my_messenger/cubit/chat/chat_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatBottomNavBar extends StatefulWidget {
@@ -61,7 +61,6 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
                   onTap: () {
                     Navigator.pop(modalContext);
                     context.read<ChatCubit>().pickAndUpload(
-                          channelId: channelId,
                           attachmentType: MessageContentType.media,
                         );
                   },
@@ -84,7 +83,6 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
                   onTap: () {
                     Navigator.pop(context);
                     context.read<ChatCubit>().pickAndUpload(
-                          channelId: channelId,
                           attachmentType: MessageContentType.file,
                         );
                   },

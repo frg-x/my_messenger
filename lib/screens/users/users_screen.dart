@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_messenger/constants.dart';
@@ -101,8 +103,15 @@ class UsersBody extends StatelessWidget {
                                     : Container(
                                         width: 56,
                                         height: 56,
-                                        child: Image.network(
-                                            users[index].avatarUrl),
+                                        child: CachedNetworkImage(
+                                          imageUrl: users[index].avatarUrl,
+                                          placeholder: (context, url) =>
+                                              Platform.isIOS
+                                                  ? CupertinoActivityIndicator()
+                                                  : CircularProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
+                                        ),
                                       ),
                                 borderRadius: BorderRadius.circular(28.0),
                               ),

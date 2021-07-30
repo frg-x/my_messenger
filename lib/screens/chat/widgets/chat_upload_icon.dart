@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:my_messenger/cubit/messages/chat_cubit.dart';
+import 'package:my_messenger/cubit/chat/chat_cubit.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
-Widget chatUploadIcon({
-  required ChatState state,
-  required String size,
-  required String filename,
-}) {
+Widget chatUploadIcon({required ChatState state}) {
   if (state is UploadInProgress) {
     return CircularPercentIndicator(
       radius: 32,

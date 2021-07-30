@@ -24,9 +24,7 @@ class UploadFinished extends ChatState {
 
 class UploadCancelled extends ChatState {}
 
-class UploadError extends ChatState {}
-
-class PDFDataReady extends ChatState {
-  PDFDataReady(this.preview);
-  final PdfPageImage preview;
+class UploadError extends ChatState {
+  UploadError(this.fileName);
+  final String fileName;
 }

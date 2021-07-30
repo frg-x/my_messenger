@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_messenger/constants.dart';
-import 'package:my_messenger/cubit/messages/chat_cubit.dart';
+import 'package:my_messenger/cubit/chat/chat_cubit.dart';
 import 'package:my_messenger/screens/chat/cubit/download/download_cubit.dart';
 import 'package:my_messenger/screens/chat/cubit/pdf_preview/pdf_preview_cubit.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_download_icon.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_upload_icon.dart';
 import 'package:open_file/open_file.dart';
+import 'package:path/path.dart' as path;
 
 class FileBubble extends StatefulWidget {
   FileBubble({
@@ -28,6 +29,7 @@ class FileBubble extends StatefulWidget {
 
 class _FileBubbleState extends State<FileBubble> {
   late String downloadsDir;
+  late String cachedImagePath;
 
   String formatFileSize(int size) {
     double calculatedSize;
@@ -53,7 +55,7 @@ class _FileBubbleState extends State<FileBubble> {
   @override
   void initState() {
     downloadsDir = context.read<ChatCubit>().getDownloadsDir();
-    downloadsDir = '$downloadsDir/My-Messenger-Cache-Files';
+    cachedImagePath = context.read<ChatCubit>().getPDFCache();
     isPDF = widget.metaData['name'].toLowerCase().endsWith('.pdf');
     super.initState();
   }
@@ -67,7 +69,7 @@ class _FileBubbleState extends State<FileBubble> {
   Widget build(BuildContext context) {
     String fileInfo = '';
     String filePath = '$downloadsDir/${widget.metaData['name']}';
-    //print(filePath);
+    String basename = path.basenameWithoutExtension(filePath);
     String size = widget.metaData != null ? widget.metaData['size'] : '0';
     return widget.senderIsMe
         ? MultiBlocProvider(
@@ -81,14 +83,10 @@ class _FileBubbleState extends State<FileBubble> {
               children: [
                 BlocBuilder<ChatCubit, ChatState>(
                   builder: (context, state) {
+                    //print('$cachedImagePath/$basename.jpg');
                     fileInfo = formatFileSize(int.parse(size));
-                    bool isPDFLoaded =
-                        context.read<PdfPreviewCubit>().isPDFLoaded;
-                    if (isPDF && isFileExists(filePath) && !isPDFLoaded) {
-                      context.read<PdfPreviewCubit>().getPDFPreview(filePath);
-                      //print(isPDFLoaded);
-                      //print('loaded $filePath');
-                    }
+                    context.read<PdfPreviewCubit>().getPDFPreview(
+                        filePath, '$cachedImagePath/$basename.jpg');
                     return GestureDetector(
                       onTap: () {
                         openFile(filePath);
@@ -122,6 +120,13 @@ class _FileBubbleState extends State<FileBubble> {
                                               child: Image(
                                             image: MemoryImage(
                                                 state.preview.bytes),
+                                            height: 150,
+                                          ));
+                                        } else if (state
+                                            is PdfCachedPreviewDone) {
+                                          return SizedBox(
+                                              child: Image.file(
+                                            File(state.cachedPreviewPath),
                                             height: 150,
                                           ));
                                         } else {
@@ -162,11 +167,7 @@ class _FileBubbleState extends State<FileBubble> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   SizedBox(
-                                    child: chatUploadIcon(
-                                      state: state,
-                                      filename: widget.metaData['name'],
-                                      size: size,
-                                    ),
+                                    child: chatUploadIcon(state: state),
                                     width: 32,
                                     height: 40,
                                   ),
@@ -224,9 +225,8 @@ class _FileBubbleState extends State<FileBubble> {
                 }
                 bool isPDFLoaded = context.read<PdfPreviewCubit>().isPDFLoaded;
                 if (isPDF && isFileExists(filePath) && !isPDFLoaded) {
-                  context.read<PdfPreviewCubit>().getPDFPreview(filePath);
-                  //print(isPDFLoaded);
-                  //print('loaded $filePath');
+                  context.read<PdfPreviewCubit>().getPDFPreview(
+                      filePath, '$cachedImagePath/$basename.jpg');
                 }
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -278,6 +278,13 @@ class _FileBubbleState extends State<FileBubble> {
                                               child: Image(
                                             image: MemoryImage(
                                                 state.preview.bytes),
+                                            height: 150,
+                                          ));
+                                        } else if (state
+                                            is PdfCachedPreviewDone) {
+                                          return SizedBox(
+                                              child: Image.file(
+                                            File(state.cachedPreviewPath),
                                             height: 150,
                                           ));
                                         } else {

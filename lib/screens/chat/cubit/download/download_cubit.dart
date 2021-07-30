@@ -49,9 +49,9 @@ class DownloadCubit extends Cubit<DownloadState> {
     if (isPermissionStatusGranted) {
       var downloadsDirectory = await _getDownloadsDirectory();
 
-      localPath = '$downloadsDirectory/My-Messenger-Cache-Files/$filename';
+      localPath = '$downloadsDirectory/$filename';
       file = File(localPath);
-      print(localPath);
+      //print(localPath);
 
       try {
         Reference tst = FirebaseStorage.instance.refFromURL(url);
