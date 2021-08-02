@@ -17,11 +17,13 @@ class TextBubble extends StatelessWidget {
       mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Container(
-          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+          constraints:
+              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           margin: EdgeInsets.symmetric(vertical: 2),
           decoration: BoxDecoration(
-            border: Border.all(color: isMe ? Color(0xFF7F48FB) : Color(0xFFEEEEEE)),
+            border: Border.all(
+                color: isMe ? AllColors.purple : AllColors.lightGray),
             borderRadius: isMe
                 ? BorderRadius.only(
                     topLeft: Radius.circular(20),
@@ -33,12 +35,12 @@ class TextBubble extends StatelessWidget {
                     topRight: Radius.circular(20),
                     bottomRight: Radius.circular(20),
                   ),
-            color: isMe ? Color(0xFF7F48FB) : Colors.white,
+            color: isMe ? AllColors.purple : AllColors.white,
           ),
           child: Text(
             content,
             style: AllStyles.font15w400black.copyWith(
-              color: isMe ? Colors.white : Color(0xFF333333),
+              color: isMe ? AllColors.white : AllColors.darkGray,
             ),
             overflow: TextOverflow.clip,
             maxLines: 50,

@@ -6,6 +6,12 @@ import 'package:flutter/material.dart';
 class AllColors {
   static const darkGray = Color(0xFF333333);
   static const lightGray = Color(0xFFEEEEEE);
+  static const lightGray2 = Color(0xFF787878);
+  static const white = Color(0xFFFFFFFF);
+  static const purple = Color(0xFF7F48FB);
+  static const modalSheetLine = Color(0XFFEBEBEB);
+  static const lightPurple = Color(0xFFB291FD);
+  static const profileImageBackground = Color(0xFFF2F2F2);
 }
 
 enum MessageContentType { text, file, media }
@@ -19,7 +25,7 @@ class AllStyles {
 
   static const font14w400white = TextStyle(
     fontSize: 14.0,
-    color: Colors.white,
+    color: AllColors.white,
     fontWeight: FontWeight.w400,
   );
 
@@ -43,7 +49,7 @@ class AllStyles {
 
   static const font15w500white = TextStyle(
     fontSize: 15.0,
-    color: Colors.white,
+    color: AllColors.white,
     fontWeight: FontWeight.w500,
   );
 
@@ -62,12 +68,12 @@ class AllStyles {
   static const font28w900white = TextStyle(
     fontSize: 28.0,
     fontWeight: FontWeight.w900,
-    color: Colors.white,
+    color: AllColors.white,
   );
   static const font36w900white = TextStyle(
     fontSize: 36.0,
     fontWeight: FontWeight.w900,
-    color: Colors.white,
+    color: AllColors.white,
   );
 
   static final signInInputDecoration = InputDecoration(
@@ -99,25 +105,25 @@ class AllStyles {
     border: UnderlineInputBorder(
       borderSide: BorderSide(
         width: 1,
-        color: Color(0xFFEEEEEE),
+        color: AllColors.lightGray,
       ),
     ),
     disabledBorder: UnderlineInputBorder(
       borderSide: BorderSide(
         width: 1,
-        color: Color(0xFFEEEEEE),
+        color: AllColors.lightGray,
       ),
     ),
     enabledBorder: UnderlineInputBorder(
       borderSide: BorderSide(
         width: 1,
-        color: Color(0xFFEEEEEE),
+        color: AllColors.lightGray,
       ),
     ),
     focusedBorder: UnderlineInputBorder(
       borderSide: BorderSide(
         width: 2,
-        color: Color(0xFFEEEEEE),
+        color: AllColors.lightGray,
       ),
     ),
   );

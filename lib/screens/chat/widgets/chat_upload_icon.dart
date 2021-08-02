@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:my_messenger/constants.dart';
 import 'package:my_messenger/cubit/chat/chat_cubit.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -8,12 +9,12 @@ Widget chatUploadIcon({required ChatState state}) {
     return CircularPercentIndicator(
       radius: 32,
       percent: state.percent,
-      backgroundColor: Color(0xFFB291FD),
-      progressColor: Color(0xFFFFFFFF),
+      backgroundColor: AllColors.lightPurple,
+      progressColor: AllColors.white,
       lineWidth: 2.0,
       center: Icon(
         Icons.close,
-        color: Color(0xFFFFFFFF),
+        color: AllColors.white,
         size: 20,
       ),
     );

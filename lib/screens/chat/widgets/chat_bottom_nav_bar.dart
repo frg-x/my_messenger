@@ -31,7 +31,7 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
       width: 32.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(100.0)),
-        color: Color(0XFFEBEBEB),
+        color: AllColors.modalSheetLine,
       ),
     );
   }
@@ -124,7 +124,7 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
           top: 8,
           bottom: 0,
         ),
-        color: Colors.white,
+        color: AllColors.white,
         alignment: Alignment.topCenter,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -140,7 +140,7 @@ class _ChatBottomNavBarState extends State<ChatBottomNavBar> {
                   fit: BoxFit.scaleDown,
                 ),
                 decoration: BoxDecoration(
-                  color: Color(0xFFEEEEEE),
+                  color: AllColors.lightGray,
                   borderRadius: BorderRadius.circular(16.0),
                 ),
               ),

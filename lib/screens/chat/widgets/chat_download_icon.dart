@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:my_messenger/constants.dart';
 import 'package:my_messenger/screens/chat/cubit/download/download_cubit.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -39,24 +40,24 @@ Widget chatDownloadIcon({
         ? CircularPercentIndicator(
             radius: 32,
             percent: state.percent,
-            backgroundColor: Color(0xFFB291FD),
-            progressColor: Color(0xFFFFFFFF),
+            backgroundColor: AllColors.lightPurple,
+            progressColor: AllColors.white,
             lineWidth: 2.0,
             center: Icon(
               Icons.close,
-              color: Color(0xFFFFFFFF),
+              color: AllColors.white,
               size: 20,
             ),
           )
         : CircularPercentIndicator(
             radius: 32,
             percent: state.percent,
-            backgroundColor: Color(0xFFEEEEEE),
-            progressColor: Color(0xFF7F48FB),
+            backgroundColor: AllColors.lightGray,
+            progressColor: AllColors.purple,
             lineWidth: 2.0,
             center: Icon(
               Icons.close,
-              color: Color(0xFF7F48FB),
+              color: AllColors.purple,
               size: 20,
             ),
           );

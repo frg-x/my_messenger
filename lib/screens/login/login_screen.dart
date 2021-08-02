@@ -22,7 +22,8 @@ class _LoginScreenState extends State<LoginScreen> {
   var initialScreen = screenMode.signIn;
 
   void validateAndCall(screenMode initialScreen) {
-    bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+    bool emailValid = RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(_email);
 
     FocusScope.of(context).requestFocus(FocusNode());
@@ -70,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text('MeSsEnGer', style: AllStyles.font28w900white),
                   ],
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 Column(
                   children: [
                     SizedBox(
@@ -83,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     SizedBox(
                       height: 40,
                       child: TextField(
@@ -95,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     initialScreen == screenMode.create
                         ? Column(
                             children: [
@@ -103,12 +104,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () => validateAndCall(initialScreen),
                                 child: Text(
                                   'Create Account',
-                                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                                  style: TextStyle(
+                                      color: Colors.black54, fontSize: 16),
                                 ),
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(Colors.white),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      AllColors.white),
                                   padding: MaterialStateProperty.all(
-                                    EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                                    EdgeInsets.symmetric(
+                                        horizontal: 12.0, vertical: 6.0),
                                   ),
                                 ),
                               ),
@@ -120,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Text(
                                   'Sign In',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: AllColors.white,
                                     decoration: TextDecoration.underline,
                                   ),
                                 ),
@@ -138,12 +142,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () => validateAndCall(initialScreen),
                                 child: Text(
                                   'Sign In',
-                                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                                  style: TextStyle(
+                                      color: Colors.black54, fontSize: 16),
                                 ),
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(Colors.white),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      AllColors.white),
                                   padding: MaterialStateProperty.all(
-                                    EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                                    EdgeInsets.symmetric(
+                                        horizontal: 12.0, vertical: 6.0),
                                   ),
                                 ),
                               ),
@@ -155,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Text(
                                   'Create Account',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: AllColors.white,
                                     decoration: TextDecoration.underline,
                                   ),
                                 ),
@@ -193,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 //
 // Scaffold(
-// backgroundColor: Colors.white38,
+// backgroundColor: AllColors.white38,
 // body: Container(
 // padding: EdgeInsets.symmetric(horizontal: 36, vertical: 12),
 // child: Column(
@@ -239,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
 // ),
 // style: ButtonStyle(
 // backgroundColor:
-// MaterialStateProperty.all(Colors.white),
+// MaterialStateProperty.all(AllColors.white),
 // padding: MaterialStateProperty.all(
 // EdgeInsets.symmetric(
 // horizontal: 12.0, vertical: 6.0),
@@ -255,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
 // child: Text(
 // 'Sign In',
 // style: TextStyle(
-// color: Colors.white,
+// color: AllColors.white,
 // decoration: TextDecoration.underline,
 // ),
 // ),
@@ -279,7 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
 // ),
 // style: ButtonStyle(
 // backgroundColor:
-// MaterialStateProperty.all(Colors.white),
+// MaterialStateProperty.all(AllColors.white),
 // padding: MaterialStateProperty.all(
 // EdgeInsets.symmetric(
 // horizontal: 12.0, vertical: 6.0),
@@ -295,7 +302,7 @@ class _LoginScreenState extends State<LoginScreen> {
 // child: Text(
 // 'Create Account',
 // style: TextStyle(
-// color: Colors.white,
+// color: AllColors.white,
 // decoration: TextDecoration.underline,
 // ),
 // ),

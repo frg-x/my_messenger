@@ -120,13 +120,13 @@ class _FileBubbleState extends State<FileBubble> {
                                 horizontal: 12, vertical: 8),
                             margin: EdgeInsets.symmetric(vertical: 2),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Color(0xFF7F48FB)),
+                              border: Border.all(color: AllColors.purple),
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(20),
                                 topRight: Radius.circular(20),
                                 bottomLeft: Radius.circular(20),
                               ),
-                              color: Color(0xFF7F48FB),
+                              color: AllColors.purple,
                             ),
                             width: MediaQuery.of(context).size.width * 0.5,
                             child: (isPDF && isFileExists(filePath))
@@ -173,7 +173,7 @@ class _FileBubbleState extends State<FileBubble> {
                                           '${widget.metaData['name']}',
                                           style: AllStyles.font15w500white
                                               .copyWith(
-                                            color: Color(0xFFFFFFFF),
+                                            color: AllColors.white,
                                           ),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 10,
@@ -183,7 +183,7 @@ class _FileBubbleState extends State<FileBubble> {
                                           fileInfo,
                                           style: AllStyles.font14w400white
                                               .copyWith(
-                                            color: Color(0xFFEEEEEE),
+                                            color: AllColors.lightGray,
                                           ),
                                         ),
                                       ],
@@ -220,7 +220,7 @@ class _FileBubbleState extends State<FileBubble> {
                                               '${widget.metaData['name']}',
                                               style: AllStyles.font15w500white
                                                   .copyWith(
-                                                color: Color(0xFFFFFFFF),
+                                                color: AllColors.white,
                                               ),
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 10,
@@ -230,7 +230,7 @@ class _FileBubbleState extends State<FileBubble> {
                                               fileInfo,
                                               style: AllStyles.font14w400white
                                                   .copyWith(
-                                                color: Color(0xFFFFFFFF)
+                                                color: AllColors.white
                                                     .withOpacity(0.7),
                                               ),
                                             ),
@@ -294,13 +294,13 @@ class _FileBubbleState extends State<FileBubble> {
                             EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         margin: EdgeInsets.symmetric(vertical: 2),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Color(0xFFEEEEEE)),
+                          border: Border.all(color: AllColors.lightGray),
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20),
                             bottomRight: Radius.circular(20),
                           ),
-                          color: Colors.white,
+                          color: AllColors.white,
                         ),
                         width: MediaQuery.of(context).size.width * 0.5,
                         child: (isPDF && isFileExists(filePath))
@@ -344,7 +344,7 @@ class _FileBubbleState extends State<FileBubble> {
                                     Text(
                                       '${widget.metaData['name']}',
                                       style: AllStyles.font15w500white.copyWith(
-                                        color: Color(0xFF333333),
+                                        color: AllColors.darkGray,
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 10,
@@ -353,7 +353,7 @@ class _FileBubbleState extends State<FileBubble> {
                                     Text(
                                       fileInfo,
                                       style: AllStyles.font14w400white.copyWith(
-                                        color: Color(0xFF787878),
+                                        color: AllColors.lightGray2,
                                       ),
                                     ),
                                   ],
@@ -387,7 +387,7 @@ class _FileBubbleState extends State<FileBubble> {
                                           '${widget.metaData['name']}',
                                           style: AllStyles.font15w500white
                                               .copyWith(
-                                            color: Color(0xFF333333),
+                                            color: AllColors.darkGray,
                                           ),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 10,
@@ -397,7 +397,7 @@ class _FileBubbleState extends State<FileBubble> {
                                           fileInfo,
                                           style: AllStyles.font14w400white
                                               .copyWith(
-                                            color: Color(0xFF787878),
+                                            color: AllColors.lightGray2,
                                           ),
                                         ),
                                       ],

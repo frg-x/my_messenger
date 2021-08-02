@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_messenger/constants.dart';
 import 'package:my_messenger/cubit/sign_in/sign_in_cubit.dart';
 import 'package:my_messenger/screens/login/login_screen.dart';
 import 'package:my_messenger/screens/users/users_screen.dart';
@@ -21,7 +22,7 @@ class _VerifyUserState extends State<VerifyUser> {
           return UsersScreen();
         } else {
           return Center(
-            child: CircularProgressIndicator(color: Colors.white),
+            child: CircularProgressIndicator(color: AllColors.white),
           );
         }
       },

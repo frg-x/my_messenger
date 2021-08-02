@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_messenger/constants.dart';
 import 'package:my_messenger/screens/chat/widgets/chat_big_image.dart';
 
 class ImagePreviewBubble extends StatelessWidget {
@@ -44,10 +45,10 @@ class ImagePreviewBubble extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border.all(
                   color: isMe
-                      ? Color(0xFF7F48FB).withOpacity(0.3)
-                      : Color(0xFFEEEEEE)),
+                      ? AllColors.purple.withOpacity(0.3)
+                      : AllColors.lightGray),
               borderRadius: BorderRadius.circular(8.0),
-              color: isMe ? Color(0xFF7F48FB).withOpacity(0.1) : Colors.white,
+              color: isMe ? AllColors.purple.withOpacity(0.1) : AllColors.white,
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(6.0),

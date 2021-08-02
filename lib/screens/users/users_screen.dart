@@ -20,7 +20,7 @@ class UsersScreen extends StatelessWidget {
     return Scaffold(
       appBar: UsersAppBar(),
       body: UsersBody(),
-      backgroundColor: Colors.white,
+      backgroundColor: AllColors.white,
     );
   }
 }
@@ -60,7 +60,7 @@ class UsersBody extends StatelessWidget {
               child: Container(
                 height: MediaQuery.of(context).size.height,
                 padding: EdgeInsets.only(top: 0),
-                color: Colors.white,
+                color: AllColors.white,
                 child: ListView.builder(
                     padding: EdgeInsets.symmetric(horizontal: 24.0),
                     shrinkWrap: true,
@@ -154,12 +154,12 @@ class UsersAppBar extends StatelessWidget implements PreferredSizeWidget {
       children: [
         Container(
           height: 44,
-          color: Colors.white,
+          color: AllColors.white,
         ),
         Container(
           padding: EdgeInsets.only(left: 28, right: 19),
           height: 44.0,
-          color: Colors.white,
+          color: AllColors.white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

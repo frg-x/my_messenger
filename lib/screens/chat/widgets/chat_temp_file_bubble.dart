@@ -34,7 +34,7 @@ class _TempFileBubbleState extends State<TempFileBubble> {
       width: 32.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(100.0)),
-        color: Color(0XFFEBEBEB),
+        color: AllColors.modalSheetLine,
       ),
     );
   }
@@ -129,13 +129,13 @@ class _TempFileBubbleState extends State<TempFileBubble> {
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   margin: EdgeInsets.symmetric(vertical: 2),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFF7F48FB)),
+                    border: Border.all(color: AllColors.purple),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
                       bottomLeft: Radius.circular(20),
                     ),
-                    color: Color(0xFF7F48FB),
+                    color: AllColors.purple,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -156,7 +156,7 @@ class _TempFileBubbleState extends State<TempFileBubble> {
                             Text(
                               state.fileName,
                               style: AllStyles.font15w500white.copyWith(
-                                color: Color(0xFFFFFFFF),
+                                color: AllColors.white,
                               ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 10,
@@ -165,7 +165,7 @@ class _TempFileBubbleState extends State<TempFileBubble> {
                             Text(
                               fileInfo,
                               style: AllStyles.font14w400white.copyWith(
-                                color: Color(0xFFFFFFFF).withOpacity(0.7),
+                                color: AllColors.white.withOpacity(0.7),
                               ),
                             ),
                           ],
@@ -190,13 +190,13 @@ class _TempFileBubbleState extends State<TempFileBubble> {
                           EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       margin: EdgeInsets.symmetric(vertical: 2),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xFF7F48FB)),
+                        border: Border.all(color: AllColors.purple),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20),
                           bottomLeft: Radius.circular(20),
                         ),
-                        color: Color(0xFF7F48FB),
+                        color: AllColors.purple,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -218,7 +218,7 @@ class _TempFileBubbleState extends State<TempFileBubble> {
                                 Text(
                                   state.fileName,
                                   style: AllStyles.font15w500white.copyWith(
-                                    color: Color(0xFFFFFFFF),
+                                    color: AllColors.white,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 10,
@@ -227,7 +227,7 @@ class _TempFileBubbleState extends State<TempFileBubble> {
                                 Text(
                                   'Failed to send',
                                   style: AllStyles.font14w400white.copyWith(
-                                    color: Color(0xFFFFFFFF).withOpacity(0.7),
+                                    color: AllColors.white.withOpacity(0.7),
                                   ),
                                 ),
                               ],
@@ -236,7 +236,7 @@ class _TempFileBubbleState extends State<TempFileBubble> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     SvgPicture.asset('assets/icons/upload_error.svg'),
                   ],
                 ),

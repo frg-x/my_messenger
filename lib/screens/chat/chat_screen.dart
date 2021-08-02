@@ -34,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AllColors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Row(
@@ -48,14 +48,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 height: 25,
                 width: 25,
                 alignment: Alignment.center,
-                color: Colors.white,
+                color: AllColors.white,
                 child: SvgPicture.asset('assets/icons/close.svg'),
               ),
             ),
           ],
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: AllColors.white,
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: ChatBottomNavBar(userId: partnerId),
       extendBody: true,

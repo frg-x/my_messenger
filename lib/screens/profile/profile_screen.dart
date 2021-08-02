@@ -55,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       width: 32.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(100.0)),
-        color: Color(0XFFEBEBEB),
+        color: AllColors.modalSheetLine,
       ),
     );
   }
@@ -121,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 24, vertical: 16),
                           decoration: BoxDecoration(
-                              color: Color(0xFFEEEEEE),
+                              color: AllColors.lightGray,
                               borderRadius: BorderRadius.circular(100)),
                           child: Text(
                             'Quit',
@@ -162,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 24, vertical: 16),
                           decoration: BoxDecoration(
-                              color: Color(0xFF7F48FB),
+                              color: AllColors.purple,
                               borderRadius: BorderRadius.circular(100)),
                           child: Text(
                             'Save',
@@ -293,7 +293,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Container(
               padding: EdgeInsets.only(left: 25, right: 22),
-              color: Colors.white,
+              color: AllColors.white,
               child: Padding(
                 padding: const EdgeInsets.only(top: 24),
                 child: Center(
@@ -314,7 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             width: 72,
                             height: 72,
                             decoration: BoxDecoration(
-                              color: Color(0xFFF2F2F2),
+                              color: AllColors.profileImageBackground,
                               borderRadius: BorderRadius.circular(36),
                             ),
                             child: Container(
@@ -435,7 +435,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         Container(
                           height: 42,
                           child: TextFormField(
@@ -453,7 +453,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         Container(
                           height: 42,
                           child: TextFormField(
@@ -471,7 +471,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                       ],
                     ),
                   ),
@@ -481,13 +481,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: AllColors.white,
     );
   }
 }
 
 class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final double appBarHeight = 68;
+  final double appBarHeight = 80;
 
   final bool isSaveVisible;
   final Function validate;
@@ -499,13 +499,13 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Column(
       children: [
         Container(
-          height: 24.0,
-          color: Colors.white,
+          height: 37.0,
+          color: AllColors.white,
         ),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 24),
-          height: 68.0,
-          color: Colors.white,
+          height: 60.0,
+          color: AllColors.white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
