@@ -504,7 +504,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 24),
-          height: 84.0,
+          height: 68.0,
           color: Colors.white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
