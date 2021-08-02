@@ -78,107 +78,98 @@ class _FileBubbleState extends State<FileBubble> {
               BlocProvider(create: (context) => DownloadCubit()),
               BlocProvider(create: (context) => PdfPreviewCubit()),
             ],
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                BlocBuilder<ChatCubit, ChatState>(
-                  builder: (context, state) {
-                    //print('$cachedImagePath/$basename.jpg');
-                    fileInfo = formatFileSize(int.parse(size));
-                    context.read<PdfPreviewCubit>().getPDFPreview(
-                        filePath, '$cachedImagePath/$basename.jpg');
-                    return GestureDetector(
-                      onTap: () {
-                        openFile(filePath);
-                        //print(filePath);
-                      },
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        margin: EdgeInsets.symmetric(vertical: 2),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Color(0xFF7F48FB)),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                          ),
-                          color: Color(0xFF7F48FB),
-                        ),
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        child: (isPDF && isFileExists(filePath))
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(6.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    BlocBuilder<PdfPreviewCubit,
-                                        PdfPreviewState>(
-                                      builder: (context, state) {
-                                        if (state is PdfPreviewDone) {
-                                          return SizedBox(
-                                              child: Image(
-                                            image: MemoryImage(
-                                                state.preview.bytes),
-                                            height: 150,
-                                          ));
-                                        } else if (state
-                                            is PdfCachedPreviewDone) {
-                                          return SizedBox(
-                                              child: Image.file(
-                                            File(state.cachedPreviewPath),
-                                            height: 150,
-                                          ));
-                                        } else {
-                                          return SizedBox(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(4.0),
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2.5,
-                                              ),
-                                            ),
-                                            width: 24,
-                                            height: 24,
-                                          );
-                                        }
-                                      },
-                                    ),
-                                    Text(
-                                      '${widget.metaData['name']}',
-                                      style: AllStyles.font15w500white.copyWith(
-                                        color: Color(0xFFFFFFFF),
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 10,
-                                      softWrap: true,
-                                    ),
-                                    Text(
-                                      fileInfo,
-                                      style: AllStyles.font14w400white.copyWith(
-                                        color: Color(0xFFEEEEEE),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    child: chatUploadIcon(state: state),
-                                    width: 32,
-                                    height: 40,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.3,
+            child: BlocBuilder<DownloadCubit, DownloadState>(
+              builder: (downloadContext, downloadState) {
+                if (downloadState is DownloadInProgress) {
+                  fileInfo =
+                      '${(downloadState.percent * 100).toStringAsFixed(0)}% downloaded';
+                } else {
+                  fileInfo = formatFileSize(int.parse(size));
+                }
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    BlocBuilder<ChatCubit, ChatState>(
+                      builder: (context, state) {
+                        //print('state: $state');
+                        //print('downloadState: $downloadState');
+                        if (isFileExists(filePath)) {
+                          context.read<PdfPreviewCubit>().getPDFPreview(
+                              filePath, '$cachedImagePath/$basename.jpg');
+                        }
+                        return GestureDetector(
+                          onTap: () async {
+                            if (downloadState is DownloadInitial) {
+                              if (isFileExists(filePath)) {
+                                openFile(
+                                    '$downloadsDir/${widget.metaData['name']}');
+                              } else {
+                                //print('Start downloading');
+                                context.read<DownloadCubit>().downloadURL(
+                                      url: widget.metaData['url'],
+                                      filename: widget.metaData['name'],
+                                    );
+                              }
+                            } else if (downloadState is DownloadFinished) {
+                              openFile(downloadState.localPath);
+                            } else {
+                              context.read<DownloadCubit>().cancelDownload();
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            margin: EdgeInsets.symmetric(vertical: 2),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Color(0xFF7F48FB)),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                                bottomLeft: Radius.circular(20),
+                              ),
+                              color: Color(0xFF7F48FB),
+                            ),
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: (isPDF && isFileExists(filePath))
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(6.0),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+                                        BlocBuilder<PdfPreviewCubit,
+                                            PdfPreviewState>(
+                                          builder: (context, state) {
+                                            if (state is PdfPreviewDone) {
+                                              return SizedBox(
+                                                  child: Image(
+                                                image: MemoryImage(
+                                                    state.preview.bytes),
+                                                height: 150,
+                                              ));
+                                            } else if (state
+                                                is PdfCachedPreviewDone) {
+                                              return SizedBox(
+                                                  child: Image.file(
+                                                File(state.cachedPreviewPath),
+                                                height: 150,
+                                              ));
+                                            } else {
+                                              return SizedBox(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(4.0),
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    strokeWidth: 2.5,
+                                                  ),
+                                                ),
+                                                width: 24,
+                                                height: 24,
+                                              );
+                                            }
+                                          },
+                                        ),
                                         Text(
                                           '${widget.metaData['name']}',
                                           style: AllStyles.font15w500white
@@ -193,20 +184,69 @@ class _FileBubbleState extends State<FileBubble> {
                                           fileInfo,
                                           style: AllStyles.font14w400white
                                               .copyWith(
-                                            color: Color(0xFFFFFFFF)
-                                                .withOpacity(0.7),
+                                            color: Color(0xFFEEEEEE),
                                           ),
                                         ),
                                       ],
                                     ),
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        //child: chatUploadIcon(state: state),
+                                        child: chatDownloadIcon(
+                                          isMe: widget.senderIsMe,
+                                          context: downloadContext,
+                                          state: downloadState,
+                                          size: formatFileSize(int.parse(size)),
+                                          filename: widget.metaData['name'],
+                                          downloadsDir: downloadsDir,
+                                        ),
+                                        width: 32,
+                                        height: 40,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.3,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${widget.metaData['name']}',
+                                              style: AllStyles.font15w500white
+                                                  .copyWith(
+                                                color: Color(0xFFFFFFFF),
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 10,
+                                              softWrap: true,
+                                            ),
+                                            Text(
+                                              fileInfo,
+                                              style: AllStyles.font14w400white
+                                                  .copyWith(
+                                                color: Color(0xFFFFFFFF)
+                                                    .withOpacity(0.7),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
             ),
           )
         : MultiBlocProvider(
@@ -326,6 +366,7 @@ class _FileBubbleState extends State<FileBubble> {
                                 children: [
                                   SizedBox(
                                     child: chatDownloadIcon(
+                                      isMe: widget.senderIsMe,
                                       context: context,
                                       state: downloadState,
                                       size: formatFileSize(int.parse(size)),
